@@ -24,9 +24,9 @@ async function getData(slug: string) {
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const slug = params.slug;
+  const { slug } = await params;
 
   const title = slug
     .replace(/-/g, " ")
@@ -41,9 +41,11 @@ export async function generateMetadata({
 export default async function BlogArticle({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const data: fullBlog = await getData(params.slug);
+  const { slug } = await params;
+
+  const data: fullBlog = await getData(slug);
 
   return (
     <div className="mt-6 md:mt-8">

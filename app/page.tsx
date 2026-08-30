@@ -33,7 +33,7 @@ export default async function Home() {
             alt={post.title}
             width={500}
             height={500}
-            className="mx-auto h-[200px] rounded-t-lg object-cover"
+            className="mx-auto h-50 rounded-t-lg object-cover"
           />
 
           <CardContent className="mt-5">
