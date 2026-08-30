@@ -1,7 +1,7 @@
 import type { SanityImageSource } from "@sanity/image-url";
 import type { PortableTextBlock } from "@portabletext/react";
 
-export interface simpleBlogCard {
+export interface SimpleBlogCard {
   title: string;
   smallDescription: string;
   currentSlug: string;
@@ -9,9 +9,10 @@ export interface simpleBlogCard {
   _updatedAt: string;
 }
 
-export interface fullBlog {
+export interface FullBlog {
   currentSlug: string;
   title: string;
+  smallDescription: string;
   content: PortableTextBlock[];
   titleImage: SanityImageSource;
   _updatedAt: string;

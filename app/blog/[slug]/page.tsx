@@ -1,24 +1,17 @@
 import Image from "next/image";
 import { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { PortableText } from "@portabletext/react";
-import dayjs from "dayjs";
-import { client, urlFor } from "../../../lib/sanity";
-import { fullBlog } from "../../../lib/interface";
+import { getAllSlugs, getPostBySlug } from "@/lib/blog";
+import { formatDate } from "@/lib/date";
+import { urlFor } from "@/lib/sanity";
+import type { FullBlog } from "@/lib/types";
 
-export const revalidate = 600; // relevant for ISR 10 minutes
+export const revalidate = 600;
 
-async function getData(slug: string) {
-  const query = `
-    *[_type == "blog" && slug.current == '${slug}'] {
-        "currentSlug": slug.current,
-        title,
-        content,
-        titleImage,
-        _updatedAt
-      }[0]`;
-
-  const data = await client.fetch(query);
-  return data;
+export async function generateStaticParams() {
+  const slugs = await getAllSlugs();
+  return slugs.map(({ slug }) => ({ slug }));
 }
 
 export async function generateMetadata({
@@ -27,14 +20,18 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
+  const post = await getPostBySlug(slug);
 
-  const title = slug
+  const titleFromSlug = slug
     .replace(/-/g, " ")
     .replace(/\b\w/g, (char) => char.toUpperCase());
 
+  const title = post?.title ?? titleFromSlug;
+  const description = post?.smallDescription ?? title;
+
   return {
-    title: title,
-    description: title,
+    title,
+    description,
   };
 }
 
@@ -44,8 +41,11 @@ export default async function BlogArticle({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const data: FullBlog | null = await getPostBySlug(slug);
 
-  const data: fullBlog = await getData(slug);
+  if (!data) {
+    notFound();
+  }
 
   return (
     <div className="mt-6 md:mt-8">
@@ -59,16 +59,17 @@ export default async function BlogArticle({
       </h1>
 
       <Image
-        src={urlFor(data.titleImage).url()}
+        src={urlFor(data.titleImage).width(800).height(800).url()}
         width={800}
         height={800}
+        sizes="(min-width: 768px) 800px, 100vw"
         alt="Title Image"
         priority
         className="mt-6 md:mt-8 rounded-lg border mx-auto"
       />
 
       <p className="mt-6 md:mt-8 text-center text-gray-600 dark:text-gray-300">
-        {dayjs(data._updatedAt).format("ddd, MMM D, YYYY h:mm A")}
+        {formatDate(data._updatedAt, "ddd, MMM D, YYYY h:mm A")}
       </p>
 
       <div className="prose prose-blue prose-md sm:prose-lg dark:prose-invert prose-li:marker:text-primary prose-a:text-primary my-10">
