@@ -49,8 +49,12 @@ export default async function Home() {
             <p className="mt-2 text-right text-xs font-semibold text-gray-600 dark:text-gray-300">
               {dayjs(post._updatedAt).format("MMM D, YYYY")}
             </p>
-            <Button asChild className="mt-7 w-full">
-              <Link href={`/blog/${post.currentSlug}`}>Read More</Link>
+            <Button
+              className="mt-7 w-full"
+              render={<Link href={`/blog/${post.currentSlug}`} />}
+              nativeButton={false}
+            >
+              Read More
             </Button>
           </CardContent>
         </Card>

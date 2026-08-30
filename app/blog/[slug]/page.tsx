@@ -64,7 +64,7 @@ export default async function BlogArticle({
         height={800}
         alt="Title Image"
         priority
-        className="mt-6 md:mt-8 rounded-lg border"
+        className="mt-6 md:mt-8 rounded-lg border mx-auto"
       />
 
       <p className="mt-6 md:mt-8 text-center text-gray-600 dark:text-gray-300">
